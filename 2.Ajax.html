@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // 总结
+  // 1.xhr的兼容
+  // 2.IE的缓存问题
+  // 3.编码
+  // 4.async的处理(了解)
+  function createXHR() {
+    if (typeof XMLHttpRequest !== 'undefined') {
+      return new XMLHttpRequest();
+    } else if (typeof ActiveXObject !== 'undefined') {
+      var version = [
+        'MSXML2.XMLHttp.6.0',
+        'MSXML2.XMLHttp.3.0',
+        'MSXML2.XMLHttp'
+      ];
+      for (let i = 0; i < version.length; i++) {
+        try {
+          return new ActiveXObject(version[i]);
+        } catch(e) {
+
+        }
+      }
+    } else {
+      throw new Error('您的浏览器不支持xhr')
+    }
+  }
+
+  function stringify(data) {
+    const result = [];
+    for (let key in data) {
+      result.push(`${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
+    }
+    return result.join('&');
+  }
+
+  function ajax(obj) {
+    const xhr = createXHR(); //IE6的兼容,使用ActiveXObject进行创建
+    const random = Math.random(); //为了解决IE缓存问题
+    obj.url = `${obj.url}?random=${random}`;
+    if (obj.method === 'get') {
+      obj.url = obj.url + (obj.url.indexOf('?') === -1 ? '?' : '&') + stringify(obj.data); //需要编码，对特殊字符做处理，否则会将特殊字符(如&)单做分隔符
+    }
+    xhr.open(obj.method, obj.url, obj.async);
+    if (obj.async) {
+      xhr.onreadystatechange = function() {
+        if (this.readystate === 4 && this.status === 200) {
+          obj.success(this.responseText)
+        } else {
+          obj.error(this.responseText)
+        }
+      }
+    } else {
+      if (xhr.readystate === 4 && xhr.status === 200) {
+        obj.success(xhr.responseText)
+      } else {
+        obj.error(xhr.responseText)
+      }
+    }
+    if (obj.method === 'post') {
+      xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+      xhr.send(stringify(obj.data));
+    } else {
+      xhr.send(null)
+    }
+  }
+
+  document.addEventListener('click', () => {
+    ajax({
+      method: 'post',
+      url: 'https://mockapi.eolinker.com/3Cx3UCa98544bfe3b8e95471d3c33c0d3c64fd97a322d2f/getlist2',
+      data: {
+        name: 123,
+        age: 123
+      },
+      async: true,
+      success (resopnse) {
+        console.log(resopnse)
+      },
+      error (rs) {
+        console.log(rs)
+      }
+    })
+  })
+</script>
+</html>

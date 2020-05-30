@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <input type="range"/>
+</body>
+<script>
+  // demo1
+  // function timeout(ms) {
+  //   return new Promise((resolve, reject) => {
+  //     setTimeout(resolve, ms, 'done')
+  //   })
+  // }
+  // timeout(100).then(value => {
+  //   console.log(value)
+  // })
+
+  // demo2: Promise 新建后就会立即执行。
+  // let promise = new Promise((resolve, reject) => {
+  //   console.log('Pro');
+  //   resolve();
+  // })
+  // promise.then(res => {
+  //   console.log('hello')
+  // })
+  // console.log('hi')
+
+  // demo3: 一个异步操作的结果是返回另一个异步操作
+  // const p1 = new Promise((resolve, reject) => {
+  //   setTimeout(() => {reject(new Error('stop'))}, 1000)
+  // })
+  // const p2 = new Promise((resolve, reject) => {
+  //   resolve(p1)
+  // })
+  // p2.then(res => {
+  //   console.log(res)
+  // }).catch(err => {
+  //   console.log(err)
+  // })
+
+  // demo4: 一般总是建议，Promise 对象后面要跟catch()方法，这样可以处理 Promise 内部发生的错误。catch()方法返回的还是一个 Promise 对象，因此后面还可以接着调用then()方法。
+  // const someAsyncThing = function () {
+  //   return new Promise((resolve, reject) => {
+  //     resolve(x + 2);
+  //   })
+  // }
+  // someAsyncThing().catch(err => console.log(err)).then(() => {
+  //   console.log('ok')
+  // })
+
+  // demo5: 如果作为参数的 Promise 实例，自己定义了catch方法，那么它一旦被rejected，并不会触发Promise.all()的catch方法。
+  // 如果p2没有自己的catch方法，就会调用Promise.all()的catch方法。
+  // const p1 = new Promise((resolve, reject) => {
+  //   resolve('hello')
+  // }).then(result => result)
+  // .catch(err => e)
+
+  // const p2 = new Promise((resolve, reject) => {
+  //   throw new Error('stop2')
+  // }).then(res => res).catch(e => {
+  //   console.log(e)
+  // })
+
+  // Promise.all([p1, p2]).then(res => {
+  //   console.log(res)
+  // }).catch(e => {
+  //   console.log(e)
+  // })
+
+  // demo6: Promise.resolve()  将现有对象转为 Promise 对象，Promise.resolve()方法就起到这个作用。
+  // let thenable = {
+  //   then: function(resolve, reject) {
+  //     resolve(42);
+  //   }
+  // };
+
+  // let p1 = Promise.resolve(thenable);
+  // p1.then(function(value) {
+  //   console.log(value);  // 42
+  // });
+  // Promise.reject()方法的参数，会原封不动地作为reject的理由，变成后续方法的参数。这一点与Promise.resolve方法不一致。
+  // const thenable = {
+  //   then(resolve, reject) {
+  //     reject('出错了');
+  //   }
+  // };
+
+  // Promise.reject(thenable)
+  // .catch(e => {
+  //   console.log(e === thenable)
+  // })
+
+  // let promise = new Promise((resolve, reject) => {
+  //   console.log('Pro');
+  //   resolve('abc')
+  // }).then(() => {
+  //   (function() {
+  //     return new Promise((resolve, reject) => {
+  //       console.log('123')
+  //       resolve()
+  //     })
+  //   })();
+  //   return false;
+  // })
+  // promise.then(res => {
+  //   console.log(res + 'hello')
+  // })
+  // console.log('hi')
+
+  // 使用Promise写AJax
+  const handleJson = function(method, url) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.open(method, url);
+      xhr.onreadystatechange = function() {
+        if (this.readyState === 4 && this.status === 200) {
+          resolve(this.response);
+        } else {
+          reject(new Error(this.statusText));
+        }
+      }
+      xhr.send()
+    })
+  }
+  handleJson('get', 'http://www.baidu.com')
+</script>
+</html>

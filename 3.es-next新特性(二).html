@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  // 1.使用set相比数组的好处
+  let arr = [],
+    set = new Set(),
+    n = 1000000;
+  for (let i = 0; i < n; i++) {
+    arr.push(i);
+    set.add(i);
+  }
+
+  let result;
+  console.time('Array');
+  result = arr.indexOf(123123) !== -1;
+  console.timeEnd('Array');
+  console.time('Set');
+  result = set.has(123123);
+  console.timeEnd('Set');
+  // 总的来说，我们可以看到，使用Set 极大地改善运行时间。
+
+  // 给定一个整数无序数组和变量 sum，如果存在数组中任意两项和使等于 sum 的值，则返回true。
+  // 否则,返回false。例如，数组[3,5,1,4]和 sum = 9，函数应该返回true，因为4 + 5 = 9。
+
+  const findSum = (arr, val) => {
+    let searchValues = new Set();
+    searchValues.add(val - arr[0]);
+    for (let i = 1, length = arr.length; i < length; i++) {
+      let searchVal = val - arr[i];
+      if (searchValues.has(arr[i])) {
+        return true;
+      } else {
+        searchValues.add(searchVal);
+      }
+    };
+    return false;
+  };
+  console.log(findSum([3,5,1,4], 9))
+  console.log('1==============================')
+
+  // 2.Proxy的巧用
+  // (1).零值的概念，零值是特定于类型的隐式默认结构值。
+  const widthZeroValue = (target, zeroValue) => new Proxy(target, {
+    get: (obj, prop) => (prop in obj) ? obj[prop] :zeroValue
+  });
+  // 如果我们扩展withZeroValue，以Boolean (false), Number (0), String (""), Object ({})，Array ([])等对应的零值
+  let pos = {
+    x: 1,
+    y: 2
+  }
+  console.log(pos.x, pos.y, pos.z)
+  pos = widthZeroValue(pos, 0)
+  console.log(pos.x, pos.y, pos.z)
+  console.log('2==============================')
+
+  // (2).负索引数组
+  const negativeArray = (els) => new Proxy(els, {
+    get: (target, propKey, receiver) => Reflect.get(target, 
+      (+propKey < 0) ? String(target.length + +propKey) : propKey, receiver)
+  })
+  const unicorn = negativeArray(['🐴', '🎂', '🌈']);
+  console.log(unicorn[-1])
+  console.log('3==============================')
+</script>
+
+</html>

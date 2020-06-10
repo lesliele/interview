@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  // ES2016
+  // 1.Array.prototype.includes 可以轻松查找数组中是否有指定内容(包括 NaN)。
+  const arr = [1, 2, 3, 4, 5, NaN];
+
+  if (arr.indexOf(3) >= 0) {
+    console.log(true)
+  }
+
+  if (arr.includes(3)) {
+    console.log(true)
+  }
+  console.log(arr.indexOf(NaN)) //-1
+  console.log(arr.includes(NaN)) //true
+  console.log('1==============================')
+  // ES2017
+  // 1.Object.entries() 以数组方式返回键和值。 这使得在循环中使用对象或将对象转换为映射等操作变得非常简单。
+  const cars = {
+    a: 1,
+    b: 2,
+    c: 3
+  };
+  console.log(Object.entries(cars))
+  for (let [key, value] of Object.entries(cars)) {
+    console.log(key, value);
+  }
+  const map = new Map(Object.entries(cars))
+  console.log(map)
+  console.log('2==============================')
+  // 2.String.prototype.padStart 和 String.prototype.padEnd 允许在初始字符串的开头或末尾追加/前置空字符串或其他字符串。
+
+  // 有一个不同长度的数字列表。我们希望在“0”为追加符让所有项长度都为10位
+  const formatted = [0, 1, 12, 123, 1234, 12345].map(item => {
+    return item.toString().padStart(10, '0');
+  });
+  console.log(formatted);
+  // 0: "0000000000"
+  // 1: "0000000001"
+  // 2: "0000000012"
+  // 3: "0000000123"
+  // 4: "0000001234"
+  // 5: "0000012345"
+  console.log('3==============================')
+
+  // padEnd、padStart和 Object.entries 的一个很好的实际示例
+  const cars2 = {
+    '🚙BMW': '10',
+    '🚘Tesla': '5',
+    '🚖Lamborghini': '0'
+  };
+  Object.entries(cars2).map(([name, count]) => {
+    console.log(`${name.padEnd(20, '-')} count: ${count.padStart(3, '0')}`)
+  });
+  console.log('4==============================')
+
+  // 3.Async/Await 它假定 wait 之后的表达式返回一个 promise ，并在进一步移动之前等待该 promise 被 resolved 或 rejected。
+  // ES2015-Promise
+  function getAmount(userId) {
+    getUser(userId)
+      .then(getBankBalance)
+      .then(amount => {
+        console.log(amount)
+        console.log('5==============================')
+      })
+  }
+  // ES2017
+  async function getAmount2(userId) {
+    let user = await getUser(userId);
+    let amount = await getBankBalance(user);
+    console.log(amount)
+    console.log('5==============================')
+  }
+
+  function getUser(userId) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('john');
+      }, 1000);
+    })
+  }
+  function getBankBalance(user) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (user === 'john') {
+          resolve('$1000')
+        } else {
+          reject('unknow user')
+        }
+      }, 1000);
+    })
+  }
+  // getAmount("1");
+  getAmount2("1");
+
+  // ES2018
+  // 1.正则表达式的“dotall”标志
+  // 虽然点(“.”)应该匹配单个字符，但它不匹配像 \n \r \f 等新行字符。
+  console.log(/first.second/.test('first\nsecond'));
+  console.log('6==============================')
+  // 这种增强使 点 运算符能够匹配任何单个字符。为了确保它不会破坏任何东西，我们需要在创建正则表达式时使用\s标志。
+  console.log(/first.second/s.test('first\nsecond'))
+  console.log('6==============================')
+
+  // 2.命名组
+  // ES5
+  let re1 = /(\d{4})-(\d{2})-(\d{2})/
+  let result1 = re1.exec('2015-02-02')
+  console.log(result1)
+  console.log('7==============================')
+
+  // ES2018
+  let re2 = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/
+  let result2 = re2.exec('2015-02-02')
+  console.log(result2)
+  console.log('7==============================')
+
+  // 在 String.prototype.replace 中使用 named groups
+  let re3 = /(?<firstname>[A-Za-z]+) (?<lastname>[A-Za-z]+)/
+  console.log('hello world'.replace(re3, `$<lastname> $<firstname>`))
+  console.log('hello world'.replace(re3, `$2 $1`))
+  console.log('8==============================')
+</script>
+</html>
